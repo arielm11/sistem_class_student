@@ -136,4 +136,5 @@ def class_media(notas, nome):
     return resultado
 
 # Execução principal
-call_menu(nome, notas, materias)
+if __name__ == "__main__":
+    call_menu(nome, notas, materias)
