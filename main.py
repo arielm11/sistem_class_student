@@ -1,4 +1,5 @@
 import re
+import bd
 
 # Códigos de cores para o terminal (ANSI escape codes)
 RED    = '\033[31m'
@@ -22,10 +23,10 @@ def print_header():
 def print_menu():
     print("\n" + CYAN + "Menu Principal".center(60) + RESET)
     print("-" * 60)
-    print("1 - Cadastrar Aluno")
-    print("2 - Cadastrar Matéria")
+    print("1 - Cadastrar Matéria")
+    print("2 - Listar Matérias")
     print("3 - Cadastrar Notas")
-    print("4 - Exibir Média e Classificação")
+    print("4 - Listar Médias")
     print("5 - Sair")
     print("-" * 60)
 
@@ -41,16 +42,14 @@ def call_menu(nome, notas, materias):
             continue
 
         if opcao == 1:
-            print("\n" + BLUE + "Cadastro de Aluno".center(60) + RESET)
-            print("Digite os dados do aluno abaixo:")
-            nome = get_valid_name()
-            print(GREEN + "\nAluno cadastrado com sucesso!" + RESET)
-            input("\nPressione Enter para continuar...")
-        
-        elif opcao == 2:
             print("\n" + BLUE + "Cadastro de Matéria".center(60) + RESET)
             materias = get_valid_subject(materias)
             print(GREEN + "\nMatéria(s) cadastrada(s) com sucesso!" + RESET)
+            input("\nPressione Enter para continuar...")
+        
+        elif opcao == 2:
+            print("\n" + BLUE + "Listar Matérias".center(60) + RESET)
+            list_subjects()
             input("\nPressione Enter para continuar...")
         
         elif opcao == 3:
@@ -73,30 +72,31 @@ def call_menu(nome, notas, materias):
             break
         
         else:
-            print(RED + "\nOpção inválida! Escolha uma opção de 1 a 5." + RESET)
+            print(RED + "\nOpção inválida! Escolha uma opção de 1 a 4." + RESET)
             input("\nPressione Enter para continuar...")
-
-def get_valid_name():
-    while True:
-        nome = input(YELLOW + "Digite o nome do aluno: " + RESET)
-        if re.search(r'\d', nome) or re.search(r'[^a-zA-Z\s]', nome):
-            print(RED + "\nNome inválido! Insira um nome sem números ou caracteres especiais." + RESET)
-        else:
-            print(GREEN + f"\nO nome do aluno digitado foi: {nome}" + RESET)
-            return nome
 
 def get_valid_subject(materias):
     while True:
         subject = input(YELLOW + "Digite a matéria: " + RESET)
-        materias.append(subject)
+        bd.inserir_materia(subject)
         print(GREEN + f"\nA matéria digitada foi: {subject}" + RESET)
         
         add_subject = input(YELLOW + "\nDeseja adicionar outra matéria? (S/N): " + RESET)
         if add_subject.lower() != "s":
-            print(GREEN + "\nMatérias cadastradas: " + ', '.join(materias) + RESET)
             return materias
         else:
             print(BLUE + "\nCadastrar próxima matéria..." + RESET)
+
+def list_subjects():
+    materias = bd.listar_materias()  # Agora recebe os dados corretamente
+    if materias:
+        print("\n" + BOLD + "Matérias Cadastradas:".center(60) + RESET)
+        print("=" * 60)
+        for id_materia, nome_materia in materias:  # Itera corretamente pela lista de tuplas
+            print(f"ID: {id_materia} - Nome: {nome_materia}")
+        print("=" * 60)
+    else:
+        print(RED + "Nenhuma matéria cadastrada." + RESET)
 
 def get_valid_grade():
     notas = []
