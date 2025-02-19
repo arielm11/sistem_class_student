@@ -1,4 +1,3 @@
-import re
 import bd
 
 # Códigos de cores para o terminal (ANSI escape codes)
