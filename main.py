@@ -11,8 +11,6 @@ RESET  = '\033[0m'
 BOLD   = '\033[1m'
 
 # Variáveis globais
-nome = ""
-notas = []
 materias = []
 
 def print_header():
@@ -30,7 +28,7 @@ def print_menu():
     print("5 - Sair")
     print("-" * 60)
 
-def call_menu(nome, notas, materias):
+def call_menu(materias):
     while True:
         print_header()
         print_menu()
@@ -43,28 +41,24 @@ def call_menu(nome, notas, materias):
 
         if opcao == 1:
             print("\n" + BLUE + "Cadastro de Matéria".center(60) + RESET)
-            materias = get_valid_subject(materias)
+            materias = cadastro_materia(materias)
             print(GREEN + "\nMatéria(s) cadastrada(s) com sucesso!" + RESET)
             input("\nPressione Enter para continuar...")
         
         elif opcao == 2:
             print("\n" + BLUE + "Listar Matérias".center(60) + RESET)
-            list_subjects()
+            listar_materia()
             input("\nPressione Enter para continuar...")
         
         elif opcao == 3:
             print("\n" + BLUE + "Cadastro de Notas".center(60) + RESET)
-            print("Digite as notas do aluno abaixo:")
-            notas = get_valid_grade()
+            cadastrar_notas()
             print(GREEN + "\nNotas cadastradas com sucesso!" + RESET)
             input("\nPressione Enter para continuar...")
         
         elif opcao == 4:
-            print("\n" + BLUE + "Média e Classificação do Aluno".center(60) + RESET)
-            if notas:
-                print(class_media(notas, nome))
-            else:
-                print(RED + "\nNenhuma nota cadastrada. Cadastre as notas primeiro!" + RESET)
+            print("\n" + BLUE + "Listar Médias".center(60) + RESET)
+            media_nota()
             input("\nPressione Enter para continuar...")
         
         elif opcao == 5:
@@ -75,7 +69,7 @@ def call_menu(nome, notas, materias):
             print(RED + "\nOpção inválida! Escolha uma opção de 1 a 4." + RESET)
             input("\nPressione Enter para continuar...")
 
-def get_valid_subject(materias):
+def cadastro_materia(materias):
     while True:
         subject = input(YELLOW + "Digite a matéria: " + RESET)
         bd.inserir_materia(subject)
@@ -87,54 +81,23 @@ def get_valid_subject(materias):
         else:
             print(BLUE + "\nCadastrar próxima matéria..." + RESET)
 
-def list_subjects():
-    materias = bd.listar_materias()  # Agora recebe os dados corretamente
+def listar_materia():
+    materias = bd.listar_materias()
     if materias:
         print("\n" + BOLD + "Matérias Cadastradas:".center(60) + RESET)
         print("=" * 60)
-        for id_materia, nome_materia in materias:  # Itera corretamente pela lista de tuplas
+        for id_materia, nome_materia in materias:
             print(f"ID: {id_materia} - Nome: {nome_materia}")
         print("=" * 60)
     else:
-        print(RED + "Nenhuma matéria cadastrada." + RESET)
+        print(RED + "Nenhuma matéria cadastrada.Cadastre uma primeiro!" + RESET)
 
-def get_valid_grade():
-    notas = []
-    for i in range(4):
-        while True:
-            nota = input(YELLOW + f"Digite a {i+1}ª nota: " + RESET)
-            if re.search(r'[a-zA-Z]', nota) or re.search(r'[^a-zA-Z\s\.0-9]', nota):
-                print(RED + "\nNota inválida! Insira uma nota numérica válida." + RESET)
-            else:
-                try:
-                    valor = float(nota)
-                    notas.append(valor)
-                    print(GREEN + f"\nA {i+1}ª nota digitada foi: {valor}" + RESET)
-                    break
-                except ValueError:
-                    print(RED + "\nValor inválido! Insira um número." + RESET)
-    return notas
+def cadastrar_notas():
+    bd.cadastrar_notas()
 
-def class_media(notas, nome):
-    media = sum(notas) / len(notas)
-    if media >= 90:
-        status = "Excelente!"
-    elif 70 <= media < 90:
-        status = "Bom!"
-    elif 50 <= media < 70:
-        status = "Regular!"
-    else:
-        status = "Precisa ser melhor!"
-    
-    resultado = (
-        "\n" + "-" * 60 + "\n" +
-        f"Aluno: {nome}\n" +
-        f"Média: {media:.2f}\n" +
-        f"Classificação: {status}\n" +
-        "-" * 60 + "\n"
-    )
-    return resultado
+def media_nota():
+    bd.listar_notas()
 
 # Execução principal
 if __name__ == "__main__":
-    call_menu(nome, notas, materias)
+    call_menu(materias)
